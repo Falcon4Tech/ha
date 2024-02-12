@@ -1,0 +1,12 @@
+command_line:
+  - sensor:
+      name: Bybit Portfolio Value
+      unique_id: fc2fc32d-689b-42ca-9c64-3da4ba29747d
+      command: 'python3 /config/pyscript/byBit/assets.py'
+      value_template: "{{ value_json.sum }}"
+      json_attributes:
+        - price
+      unit_of_measurement: BTC
+      device_class: monetary
+      state_class: measurement
+      scan_interval: 1800 
