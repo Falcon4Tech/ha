@@ -41,6 +41,8 @@ command_line:
 
 - Make sure you have the necessary API key and secret configured in the `config.py` file.
 
+- Make sure you have installed `python-requests` in your system (`pip install requests`)
+
 - The script uses the ByBit API to fetch the portfolio data and calculate the total value in BTC.
 
 - Adjust the scan interval according to your preferences and the ByBit API rate limits.
