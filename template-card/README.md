@@ -12,7 +12,7 @@ This Home Assistant template card displays sensor data, allowing you to monitor 
 
 ## Usage
 
-To use this template card in your Home Assistant configuration, follow these steps:
+To use this card in your Home Assistant configuration use `markdown` card and follow these steps:
 
 1. **Set the Attribute to Monitor**: Define the attribute you want to monitor (e.g., "battery"). 
 2. **List Your Sensors**: Add the list of sensor IDs you want to include in the card.

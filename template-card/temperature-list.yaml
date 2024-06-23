@@ -1,39 +1,41 @@
-{% set attr = "temperature" %}
-{% set sensors = [
-  "ft_bt_001",
-  "ft_bt_002",
-  "ft_bt_003"
-] %}
+type: markdown
+content: >-
+  {% set attr = "temperature" %}
+  {% set sensors = [
+    "ft_bt_001",
+    "ft_bt_002",
+    "ft_bt_003"
+  ] %}
 
-{% set tab = namespace(num=[]) %}
+  {% set tab = namespace(num=[]) %}
 
-{% for sensor in sensors %}
-  {% set sensor_id = 'sensor.' ~ sensor ~ '_' ~ attr %}
-  {% set state = states(sensor_id) | float(default=0) %}
-  {% set last_changed = as_timestamp(states.sensor[sensor_id.split('.')[1]].last_changed) %}
-  {% set time_diff = (as_timestamp(now()) - last_changed) | round %}
-  
-  {% set sensor_data = {
-    "e": sensor.title(),
-    "n": states.sensor[sensor_id.split('.')[1]].name.split(' ')[0],
-    "t": state,
-    "d": time_diff
-  } %}
-  
-  {% set tab.num = tab.num + [sensor_data] %}
-{% endfor %}
+  {% for sensor in sensors %}
+    {% set sensor_id = 'sensor.' ~ sensor ~ '_' ~ attr %}
+    {% set state = states(sensor_id) | float(default=0) %}
+    {% set last_changed = as_timestamp(states.sensor[sensor_id.split('.')[1]].last_changed) %}
+    {% set time_diff = (as_timestamp(now()) - last_changed) | round %}
+    
+    {% set sensor_data = {
+      "e": sensor.title(),
+      "n": states.sensor[sensor_id.split('.')[1]].name.split(' ')[0],
+      "t": state,
+      "d": time_diff
+    } %}
+    
+    {% set tab.num = tab.num + [sensor_data] %}
+  {% endfor %}
 
-{% set tab = tab.num | sort(attribute='t',reverse=1) %}
-{% set max_length = 6 %}
+  {% set tab = tab.num | sort(attribute='t',reverse=1) %}
+  {% set max_length = 6 %}
 
-```
-{% for t in tab %}
-{%- set d_length = (t.d)|string | length %}
-{%- set pad_length = max_length - d_length %}
-{%- set d_name = ' ' * pad_length ~ t.d %}
-{%- if loop.last %}❄️
-{%- elif t.t > 25 %}🔥
-{%- elif 22 > t.t > 20 %}🟩
-{%- else %}🟨{% endif %}
-{{- " " ~ "◼︎" * (t.t|int//3) }}{{ " " * (11-t.t|int//3) }}{{ '%04.1f' % t.t }}°c | {{ d_name }}s | {{t.n}}
-{% endfor %}```
+  ```
+  {% for t in tab %}
+  {%- set d_length = (t.d)|string | length %}
+  {%- set pad_length = max_length - d_length %}
+  {%- set d_name = ' ' * pad_length ~ t.d %}
+  {%- if loop.last %}❄️
+  {%- elif t.t > 25 %}🔥
+  {%- elif 22 > t.t > 20 %}🟩
+  {%- else %}🟨{% endif %}
+  {{- " " ~ "◼︎" * (t.t|int//3) }}{{ " " * (11-t.t|int//3) }}{{ '%04.1f' % t.t }}°c | {{ d_name }}s | {{t.n}}
+  {% endfor %}```
