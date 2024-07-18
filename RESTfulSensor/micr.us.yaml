@@ -1,0 +1,119 @@
+- resource: https://api.mikr.us/stats
+  # info https://api.mikr.us
+  method: POST
+  payload: "srv=*SERWER*&key=*KLUCZ*" # "srv=a123$key=abc123def456..."
+  headers:
+    Content-Type: application/x-www-form-urlencoded
+    User-Agent: Home Assistant RESTapi sensor
+  scan_interval: 150    # [s] Nie przesadzaj z liczbą requestów!
+  sensor:
+    - name: "Mikrus memory total"
+      value_template: >
+        {% set lines = value_json.free.split('\n') %}
+        {% set mem_line = lines[1].split() %}
+        {{ mem_line[1] }}
+      unit_of_measurement: MiB
+      device_class: data_size
+      state_class: measurement
+      unique_id: 51bed1ba-9e64-476c-8fc1-1311000bef39
+
+    - name: "Mikrus memory used"
+      value_template: >
+        {% set lines = value_json.free.split('\n') %}
+        {% set mem_line = lines[1].split() %}
+        {{ mem_line[2] }}
+      unit_of_measurement: MiB
+      device_class: data_size
+      state_class: measurement
+      unique_id: 06954a3e-5e5f-4472-ab9f-c7b8136d6498
+
+    - name: "Mikrus memory free"
+      value_template: >
+        {% set lines = value_json.free.split('\n') %}
+        {% set mem_line = lines[1].split() %}
+        {{ mem_line[3] }}
+      unit_of_measurement: MiB
+      device_class: data_size
+      state_class: measurement
+      unique_id: 76a6d0e8-a731-4bb4-911e-962e9dd404bf
+
+    - name: "Mikrus memory available"
+      value_template: >
+        {% set lines = value_json.free.split('\n') %}
+        {% set mem_line = lines[1].split() %}
+        {{ mem_line[6] }}
+      unit_of_measurement: MiB
+      device_class: data_size
+      state_class: measurement
+      unique_id: b1a23a11-d918-4337-b0c2-871f672d999a
+
+    - name: "Mikrus SWAP"
+      value_template: >
+        {% set lines = value_json.free.split('\n') %}
+        {% set mem_line = lines[2].split() %}
+        {{ mem_line[1] }}
+      unit_of_measurement: MiB
+      device_class: data_size
+      state_class: measurement
+      unique_id: 4c2e4bfc-52a5-47e4-87ea-bb80500a9e7f
+
+    - name: "Mikrus load 01m"
+      value_template: >
+        {{ value_json.uptime.split('\n')[0].split('load average: ')[1].split(',')[0].strip() }}
+      state_class: measurement
+      unique_id: 56747b31-655e-4691-8622-b77a48093537
+
+    - name: "Mikrus load 05m"
+      value_template: >
+        {{ value_json.uptime.split('\n')[0].split('load average: ')[1].split(',')[1].strip() }}
+      state_class: measurement
+      unique_id: 7e47eb6d-1b06-4b39-a187-e44ac77a1d2b
+
+    - name: "Mikrus load 15m"
+      value_template: >
+        {{ value_json.uptime.split('\n')[0].split('load average: ')[1].split(',')[2].strip() }}
+      state_class: measurement
+      unique_id: 2346acd7-8cee-48cc-9827-b828104ed729
+
+    - name: "Mikrus disc size"
+      value_template: >
+        {% set lines = value_json.df.split('\n') %}
+        {% set disk_line = lines[1].split() %}
+        {{ disk_line[1].replace('G', '') }}
+      unit_of_measurement: GiB
+      device_class: data_size
+      state_class: measurement
+      unique_id: d6b46992-9e05-4e75-9d9b-28c4d346797f
+
+    - name: "Mikrus disc used"
+      value_template: >
+        {% set lines = value_json.df.split('\n') %}
+        {% set disk_line = lines[1].split() %}
+        {{ disk_line[2].replace('G', '') }}
+      unit_of_measurement: GiB
+      device_class: data_size
+      state_class: measurement
+      unique_id: fc0b1f1f-4f11-4a75-9983-c4272f62c8fa
+
+    - name: "Mikrus disc available"
+      value_template: >
+        {% set lines = value_json.df.split('\n') %}
+        {% set disk_line = lines[1].split() %}
+        {{ disk_line[3].replace('G', '') }}
+      unit_of_measurement: GiB
+      device_class: data_size
+      state_class: measurement
+      unique_id: ef036822-4b6e-4b19-ad29-71adf66f5c62
+
+    - name: "Mikrus disc usage"
+      value_template: >
+        {% set lines = value_json.df.split('\n') %}
+        {% set disk_line = lines[1].split() %}
+        {{ disk_line[4].replace('%', '') }}
+      unit_of_measurement: "%"
+      state_class: measurement
+      unique_id: 301a504b-b101-4041-9f73-8873d60d5614
+
+    # opcjonalny do debugowania
+    # - name: "Mikrus Error"
+    #   value_template: "{{ value_json.error }}"
