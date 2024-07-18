@@ -11,14 +11,14 @@ content: >-
 
   {% for sensor in sensors %}
     {% set sensor_id = 'sensor.' ~ sensor ~ '_' ~ attr %}
-    {% set signal_strength = states(sensor_id) | int(default=0) %}
+    {% set state = states(sensor_id) | int(default=0) %}
     {% set last_changed = as_timestamp(states.sensor[sensor_id.split('.')[1]].last_changed) %}
     {% set time_diff = (as_timestamp(now()) - last_changed) | round %}
     
     {% set sensor_data = {
       "e": sensor.title(),
       "n": states.sensor[sensor_id.split('.')[1]].name.split(' ')[0],
-      "t": signal_strength,
+      "t": state,
       "d": time_diff
     } %}
     
