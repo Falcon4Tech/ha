@@ -6,6 +6,11 @@
 
 1. [Python scripts](./pyscript)
 
+2. [RESTful](./RESTfulSensor)
+
+3. [Template cards](./template-card)
+
+4. [Automations](./automations)
 
 ## 1. Python scripts
 

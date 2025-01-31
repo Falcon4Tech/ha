@@ -1,0 +1,73 @@
+#Optimal Nighttime EV Charging
+
+# If you charge your car using a cheaper nighttime rate, make the most of this opportunity.
+# This automation optimizes the charging current to distribute charging evenly throughout the night.
+# Why is this important?
+# - Lower current reduces voltage drop.
+# - Higher voltage decreases resistance.
+# - Lower resistance and current result in lower energy losses (P = I² * R).
+# There’s no benefit in charging at 32A for 3 hours when you have 7 hours of inexpensive electricity available.
+# Spread the charging time efficiently to minimize losses and optimize costs.
+
+
+alias: Tesla Charge Current
+description: Regulates the charging current to finish charging at approximately 6:30.
+triggers:
+  - minutes: /15
+    trigger: time_pattern
+conditions:
+  - condition: and
+    conditions:
+      - condition: state
+        # ensure that car is at home location
+        entity_id: device_tracker.location
+        state: home
+      - condition: state
+        # charging is in progress minimum 10 min
+        entity_id: sensor.charging
+        state: charging
+        for:
+          hours: 0
+          minutes: 10
+          seconds: 0
+actions:
+  - variables:
+      full_ts: "{{ as_timestamp(states('sensor.time_to_full_charge'))|int }}"
+      now_ts: "{{ as_timestamp(now())|int }}"
+      desired_ts: |-
+        {{ as_timestamp(
+             now().replace(hour=6, minute=35, second=0)
+           )|int }}
+      difference: "{{ full_ts - now_ts }}"
+      delta: "{{ (full_ts - now_ts) - (desired_ts - now_ts) }}"
+      current_amp: "{{ states('number.charge_current')|int(default=24) }}"
+      min_amp: 16
+      max_amp: 32
+      step: >-
+        {% if delta > 7200 %} 3
+        {% elif delta > 3600 %} 2
+        {% else %} 1 
+        {% endif %}
+  - choose:
+      - conditions:
+          - condition: template
+            value_template: "{{ delta > 600 }}"
+          - condition: template
+            value_template: "{{ current_amp < max_amp }}"
+        sequence:
+          - data:
+              entity_id: number.charge_current
+              value: "{{ min(max_amp, current_amp + step) }}"
+            action: number.set_value
+      - conditions:
+          - condition: template
+            value_template: "{{ delta < -600 }}"
+          - condition: template
+            value_template: "{{ current_amp > min_amp }}"
+        sequence:
+          - data:
+              entity_id: number.charge_current
+              value: "{{ max(min_amp, current_amp - step) }}"
+            action: number.set_value
+    default: []
+mode: single
